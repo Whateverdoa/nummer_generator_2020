@@ -6,6 +6,8 @@ wdir = Path.cwd()
 pad_summary = wdir / "summary/"
 file = "VDP_map"
 print(pad_summary.is_dir())
+pad_sum = wdir / "pad_sum"
+sum_map = wdir/"Sum_map"
 
 path_vdp = wdir / file
 path_final =  wdir / "VDP_final"
@@ -30,7 +32,7 @@ def paden_vernietiger(dirname):
 # path.parent.mkdir(parents=True, exist_ok=True)
 #
 # path.rmdir()
-padenlijst = ["VDP_final","summary","tmp","VDP_map"]
+padenlijst = ["VDP_final","summary","tmp","VDP_map","pad_sum","Sum_map"]
 
 
 for pad in padenlijst:

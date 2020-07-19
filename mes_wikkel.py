@@ -2,6 +2,7 @@ import pandas as pd
 import os
 from paden import *
 
+tmp_rollen_posix_lijst = [rol for rol in path.glob("*.csv") if rol.is_file()]
 
 def lijstmaker(begin_nummer, totaal, aantal_per_rol):
     begin_nummer_lijst = [
@@ -57,6 +58,23 @@ def lees_per_lijst(lijst_met_posix_paden, mes):
 
     # lijst_over_axis_1 = pd.concat(concatlist, axis=1)
     # return lijst_over_axis_1
+
+def lijst_opbreker(lijst_in, mes_waarde, combinaties):
+    start = 0
+    end = mes_waarde
+    combinatie_binnen_mes = []
+
+    for combinatie in range(combinaties):
+        # print(combinatie)
+        combinatie_binnen_mes.append(lijst_in[start:end])
+        start += mes_waarde
+        end += mes_waarde
+    return combinatie_binnen_mes
+
+
+def lijstmaker_uit_posixpad_csv(padnaam):
+    rollen_posix_lijst = [rol for rol in padnaam.glob("*.csv") if rol.is_file()]
+    return rollen_posix_lijst
 
 
 def kolom_naam_gever_num_pdf_omschrijving(mes=1):
@@ -157,20 +175,44 @@ def rol_num_dikt(begin, vlg, totaal, aantal_per_rol):
     return rollen_metbegin_nummers
 
 
+def horizontaal_samenvoegen(opgebroken_posix_lijst, map_uit, meswaarde):
+    count = 1
+    for lijst_met_posix in opgebroken_posix_lijst:
+        vdp_hor_stap = f'vdp_hor_stap_{count:>{0}{4}}.csv'
+        vdp_hor_stap = map_uit / vdp_hor_stap
+        # print(vdp_hor_stap)
+        df = lees_per_lijst(lijst_met_posix, meswaarde)
+        # print(df.tail(5))
+
+        lees_per_lijst(lijst_met_posix, meswaarde).to_csv(vdp_hor_stap, index=0)
+
+        count += 1
+    return print("hor")
+
+
+# original
+# def stapel_df_baan(lijstin, ordernummer):
+#     stapel_df = []
+#     for index in range(len(lijstin)):
+#         print(lijstin[index])
+#         to_append_df = pd.read_csv(
+#             f"{path_vdp}/{lijstin[index]}", ";", dtype="str"
+#         )  #
+#         stapel_df.append(to_append_df)
+#     pd.concat(stapel_df, axis=0).to_csv(f"{path_final}/VDP_{ordernummer}.csv", ";", index=0)
 
 
 
 
-
-def stapel_df_baan(lijstin, ordernummer):
+def stapel_df_baan(lijstin, ordernummer,from_destination, destination, naam="VDP_"):
     stapel_df = []
     for index in range(len(lijstin)):
         print(lijstin[index])
         to_append_df = pd.read_csv(
-            f"{path_vdp}/{lijstin[index]}", ";", dtype="str"
+            f"{from_destination}/{lijstin[index]}", ";", dtype="str"
         )  #
         stapel_df.append(to_append_df)
-    pd.concat(stapel_df, axis=0).to_csv(f"{path_final}/VDP_{ordernummer}.csv", ";", index=0)
+    pd.concat(stapel_df, axis=0).to_csv(f"{destination}/{naam}{ordernummer}.csv", ";", index=0)
 
 
 def stapel_df_baan_met_df_lijst(lijst_van_dataframes, ordernummer):

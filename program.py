@@ -6,7 +6,7 @@ import pandas as pd
 import sys
 import mes_wikkel as mes_wik
 from paden import *
-from summary import html_sum_form_writer
+from summary_code import html_sum_form_writer, summary_rol, lege_summary_rollen
 from rollen import rest_uitrekenen, rol_num_dikt, df_lege_csv_rol_builder_met_rolnummer
 
 
@@ -122,6 +122,8 @@ def main():
             # mes_wik.df_csv_rol_builder_met_rolnummer()
 
             # ___________________________________________________________________________________
+            # todo functie invoegen die de folders leegmaakt
+
             csvs = [x for x in os.listdir(path_vdp) if x.endswith(".csv")]
             print(csvs)
             for file in csvs:
@@ -157,16 +159,22 @@ def main():
             print(f'beginlijst met rol nummers : {beginlijst}')
 
             gemaakte_posix_paden = []
+            summary_pad_namen_posix=[]
             count = 0
             for key in beginlijst.items():
                 rol_nummer = key[0]
                 beginnummer = int(key[1])
                 filenaam = f'tmp{count:>{0}{6}}.csv'
                 padnaam = Path(path.joinpath(filenaam))
+                sum_pad_naam = Path(pad_sum.joinpath(filenaam))
                 # print(padnaam)
                 gemaakte_posix_paden.append(padnaam)
+                summary_pad_namen_posix.append(sum_pad_naam)
                 mes_wik.df_csv_rol_builder_met_rolnummer(beginnummer, posities, vlg, aantal_per_rol, wikkel, prefix, postfix,
                                                          rol_nummer, veelvoud).to_csv(padnaam, index=0)
+
+                summary_rol(beginnummer, posities, vlg, aantal_per_rol, wikkel, prefix, postfix,
+                                                         rol_nummer, veelvoud).to_csv(sum_pad_naam, index=0)
                 count += 1
                 print(beginnummer, filenaam, padnaam)
 
@@ -182,26 +190,37 @@ def main():
                 print(f"dit is de dikt restrollen: {rest_rollen_dikt}")
 
                 rest_gemaakte_posix_paden = []
+                rest_summary_pad_namen_posix=[]
                 count = aantal_rollen
                 for key in rest_rollen_dikt.items():
                     rol_nummer = key[0]
                     beginnummer = int(key[1])
                     filenaam = f'tmp{count:>{0}{6}}.csv'
                     padnaam = Path(path.joinpath(filenaam))
+
+                    sum_pad_naam = Path(pad_sum.joinpath(filenaam))
+
                     # print(padnaam)
                     rest_gemaakte_posix_paden.append(padnaam)
+                    rest_summary_pad_namen_posix.append(sum_pad_naam)
+
 
                     df_lege_csv_rol_builder_met_rolnummer(beginnummer, posities, vlg, aantal_per_rol, wikkel, prefix,
                                                              postfix, rol_nummer, veelvoud).to_csv(padnaam, index=0)
+
+                    lege_summary_rollen(beginnummer, posities, vlg, aantal_per_rol, wikkel, prefix,
+                                                             postfix, rol_nummer, veelvoud).to_csv(sum_pad_naam, index=0)
                     count += 1
 
             # voeg rest posix paden toe aan gemaakte posix paden
             if hoeveelheid_rest_rollen != 0:
                 new_posix_lijst = gemaakte_posix_paden + rest_gemaakte_posix_paden
+                new_summary_lijst = summary_pad_namen_posix + rest_summary_pad_namen_posix
                 print(f'nieuwe lijsg ={new_posix_lijst}')
 
             else:
                 new_posix_lijst = gemaakte_posix_paden
+                new_summary_lijst = summary_pad_namen_posix
 
 
 
@@ -216,12 +235,20 @@ def main():
             print(f'combinaties = {combinaties}')
 
             csv_files_in_tmp = [x for x in os.listdir(path) if x.endswith(".csv")]
+
+            summary_csv_files_in_tmp = [x for x in os.listdir(pad_sum) if x.endswith(".csv")]
+
             # print(csv_files_in_tmp)
             sorted_files = sorted(csv_files_in_tmp)
+            sorted_sum_files = sorted(summary_csv_files_in_tmp)
+
             print(f'sortedfiles {sorted_files}')
 
             combinatie_binnen_mes_posix = []
             combinatie_binnen_mes = []
+
+            summary_combinatie_files = []
+
             begin = 0
             eind = mes
             for combi in range(combinaties):
@@ -230,10 +257,13 @@ def main():
                 combinatie_binnen_mes.append(sorted_files[begin:eind])
                 combinatie_binnen_mes_posix.append(new_posix_lijst[begin:eind])
 
+                summary_combinatie_files.append(new_summary_lijst[begin:eind])
+
+
                 begin += mes
                 eind += mes
 
-
+            # kan ik de summary in dezelfde forloop laten meelopen:?
             teller = 0
 
             for lijst in combinatie_binnen_mes_posix:
@@ -248,10 +278,37 @@ def main():
 
                 teller += 1
 
-            df_csv_files_in_tmp = [x for x in os.listdir(path_vdp) if x.endswith(".csv")]
-            sorted_df_files = sorted(df_csv_files_in_tmp)
 
-            mes_wik.stapel_df_baan(sorted_df_files, ordernummer)
+
+            teller=0
+            for lijst in summary_combinatie_files:
+                print(f'{mes} == mes')
+                print(lijst)
+                print(type(mes_wik.lees_per_lijst(lijst, mes)))
+
+                sum_csv_naam = Path(sum_map.joinpath(f'df_{teller:>{0}{4}}.csv'))
+                print(f'sum_csv naam {sum_csv_naam}')
+
+                mes_wik.lees_per_lijst(lijst, mes).to_csv(sum_csv_naam , ";", index=0)
+
+                teller += 1
+
+
+
+
+
+
+
+            df_csv_files_in_tmp = [x for x in os.listdir(path_vdp) if x.endswith(".csv")]
+            sum_files_in_sum_map = [x for x in os.listdir(sum_map) if x.endswith(".csv")]
+
+            sorted_df_files = sorted(df_csv_files_in_tmp)
+            sorted_sum_df_files = sorted(sum_files_in_sum_map)
+
+
+            mes_wik.stapel_df_baan(sorted_df_files, ordernummer,path_vdp,path_final)
+            mes_wik.stapel_df_baan(sorted_sum_df_files, ordernummer,sum_map,naar_folder_pad,"Summary_")
+
 
             vdp_final_files_in_tmp = [vdp for vdp in path_final.glob("*.csv") if vdp.is_file()]
 
@@ -316,6 +373,13 @@ def main():
             # todo output in html
             html_sum_form_writer(naar_folder_pad,titel=f'summary_{ordernummer}', **keywargs)  # **values voor alle ingegeven values
 
+            #__________rechtstreeks uit projekt lijstbewerkingen
+
+
+            #
+            #
+            #
+            # mes_wik.stapel_df_baan(opgebroken_lijst, ordernummer)
 
             # clean all
     window.close()
