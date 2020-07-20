@@ -124,35 +124,35 @@ def main():
             # ___________________________________________________________________________________
             # todo functie invoegen die de folders leegmaakt
 
-            csvs = [x for x in os.listdir(path_vdp) if x.endswith(".csv")]
-            print(csvs)
-            for file in csvs:
-                naam = f"{path_vdp}/{file}"  # /VDP_map
-                # print(naam)
-                if os.path.exists(naam):
-                    os.remove(naam)
-                else:
-                    print("empty")
-
-            csvs = [x for x in os.listdir(path) if x.endswith(".csv")]
+            # csvs = [x for x in os.listdir(path_vdp) if x.endswith(".csv")]
             # print(csvs)
-            for file in csvs:
-                naam = f"{path}/{file}"  # /tmp
-                # print(naam)
-                if os.path.exists(naam):
-                    os.remove(naam)
-                else:
-                    print("empty")
+            # for file in csvs:
+            #     naam = f"{path_vdp}/{file}"  # /VDP_map
+            #     # print(naam)
+            #     if os.path.exists(naam):
+            #         os.remove(naam)
+            #     else:
+            #         print("empty")
 
-            VDP_final = [x for x in os.listdir(path_final) if x.endswith(".csv")]
-            print(VDP_final)
+            # csvs = [x for x in os.listdir(path) if x.endswith(".csv")]
+            # # print(csvs)
+            # for file in csvs:
+            #     naam = f"{path}/{file}"  # /tmp
+            #     # print(naam)
+            #     if os.path.exists(naam):
+            #         os.remove(naam)
+            #     else:
+            #         print("empty")
 
-            for file in VDP_final:
-                naam = f"{path_final}/{file}"
-                if os.path.exists(naam):
-                    os.remove(naam)
-                else:
-                    print("empty")
+            # VDP_final = [x for x in os.listdir(path_final) if x.endswith(".csv")]
+            # print(VDP_final)
+            #
+            # for file in VDP_final:
+            #     naam = f"{path_final}/{file}"
+            #     if os.path.exists(naam):
+            #         os.remove(naam)
+            #     else:
+            #         print("empty")
             # _____________________________
 
             beginlijst = mes_wik.rol_num_dikt(begin_nummer, vlg, totaal_aantal, aantal_per_rol)
