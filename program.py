@@ -349,9 +349,10 @@ def main():
                 for begin in begin_nummer_lijst
             ]
 
+
             beg_eind_lijst_df = pd.DataFrame(sumlijst, dtype="str")
 
-            beg_eind_lijst_df.to_csv(f"{naar_folder_pad}/{ordernummer}_sum.csv", index=0)
+            beg_eind_lijst_df.to_csv(f"{naar_folder_pad}/{ordernummer}_sluit_etiketten.csv", index=0)
 
             keywargs = {
                         "Ordernummer: ": ordernummer,
